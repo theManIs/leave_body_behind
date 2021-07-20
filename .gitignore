@@ -14,6 +14,7 @@
 *.userprefs
 
 # Build results
+[Pp]rojectSettings/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
