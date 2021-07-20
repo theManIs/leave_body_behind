@@ -61,5 +61,12 @@ public class BrainCharacterController : MonoBehaviour
         Destroy(rb2);
         Destroy(animco);
         Destroy(this);
+
+        Camera cam = GetComponentInChildren<Camera>();
+
+        if (cam)
+        {
+            Destroy(cam.gameObject);
+        }
     }
 }
