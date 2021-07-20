@@ -31,6 +31,14 @@ public class BrainAnimationController : MonoBehaviour
         {
             anim.SetTrigger("Jump");
         }
-        
     }
+
+    public void Die()
+    {
+        anim.SetTrigger("Dead");
+        
+//        Invoke(nameof(StopPlayback), 1);
+    }
+
+//    public void StopPlayback() => anim.enabled = false;
 }
