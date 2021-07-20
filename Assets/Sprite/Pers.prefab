@@ -234,8 +234,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 005113716907e9f4a85206c12cefccd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 5
-  JumpHeight: 500
+  MoveSpeed: 3
+  JumpHeight: 520
   AirbornDrag: 0.5
   JumpLock: 0
   IsAirborn: 0
