@@ -6,8 +6,11 @@ public class BrainAnimationController : MonoBehaviour
 {
     public SpriteRenderer sp;
     public Animator anim;
+    public AudioSource asource;
 
-    // Update is called once per frame
+    public AudioClip JumpSound;
+    public AudioClip DeadSound;
+
     void Update()
     {
         if (!sp)
@@ -20,6 +23,11 @@ public class BrainAnimationController : MonoBehaviour
             anim = GetComponent<Animator>();
         }
 
+        if (!asource)
+        {
+            asource = GetComponent<AudioSource>();
+        }
+
         if (!Input.GetAxis("Horizontal").Equals(0.0f))
         {
             sp.flipX = Input.GetAxis("Horizontal") < 0;
@@ -30,15 +38,23 @@ public class BrainAnimationController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             anim.SetTrigger("Jump");
+
+            if (asource)
+            {
+                asource.clip = JumpSound;
+                asource.Play();
+            }
         }
     }
 
     public void Die()
     {
         anim.SetTrigger("Dead");
-        
-//        Invoke(nameof(StopPlayback), 1);
-    }
 
-//    public void StopPlayback() => anim.enabled = false;
+        if (asource)
+        {
+            asource.clip = DeadSound;
+            asource.Play();
+        }
+    }
 }
