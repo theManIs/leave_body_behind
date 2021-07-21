@@ -58,6 +58,16 @@ public class BrainCharacterController : MonoBehaviour
 
     public void DisableCharacter()
     {
+        BoxCollider2D bc2c = GetComponent<BoxCollider2D>();
+        Vector2 v2Collider = bc2c.size;
+        v2Collider.y -= .3f;
+        bc2c.size = v2Collider;
+        Vector2 v2Offset = bc2c.offset;
+        v2Offset.y = -.2f;
+        bc2c.offset = v2Offset;
+
+        gameObject.layer = 7;
+
         Destroy(rb2);
         Destroy(animco);
         Destroy(this);
