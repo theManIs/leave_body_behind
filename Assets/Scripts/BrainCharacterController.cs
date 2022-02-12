@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class BrainCharacterController : MonoBehaviour
@@ -14,10 +16,29 @@ public class BrainCharacterController : MonoBehaviour
 
     private Rigidbody2D rb2;
     private BrainAnimationController animco;
+    private GameObject _poc;
+    private CircleCollider2D _col;
+
+//    public void OnCollisionEnter(Collision c)
+//    {
+////        if (IsAirborn)
+////        {
+//            Debug.Log(c);
+////        }
+//    }
+
+    public void Start()
+    {
+        _poc = new GameObject("pointOfContact");
+        _col = GetComponent<CircleCollider2D>();
+    }
 
     // Update is called once per frame
     void Update()
     {
+        float horizonShift = Input.GetAxis("Horizontal");
+        int horizonSign = Math.Sign(horizonShift);
+
         if (rb2 is null)
         {
             rb2 = GetComponent<Rigidbody2D>();
@@ -27,9 +48,29 @@ public class BrainCharacterController : MonoBehaviour
             animco = GetComponent<BrainAnimationController>();
         }
 
+//        Debug.DrawRay(transform.position, Vector3.right * Input.GetAxis("Horizontal"), Color.yellow);
         if (!Input.GetAxis("Horizontal").Equals(0.0f))
         {
-            rb2.AddForce(Vector2.right * MoveSpeed * (IsAirborn ? AirbornDrag : 1) * Input.GetAxis("Horizontal"));
+            Vector2 brainPos = new Vector2(transform.position.x, transform.position.y);
+            Vector2 offsetX = new Vector2(_col.radius + _col.offset.x * horizonSign, 0);
+            RaycastHit2D rh = Physics2D.Raycast(brainPos + offsetX * horizonSign, Vector2.right * horizonSign);
+
+            if (rh)
+            {
+//                Debug.Log("name " + rh.transform.name + " offsetX " + offsetX.x + " distance " + Vector2.Distance(brainPos, rh.point));
+                _poc.transform.position = rh.point;
+            }
+
+
+//            if (Physics.Raycast(new Ray(transform.position, Vector3.right * Input.GetAxis("Horizontal")), out RaycastHit hit, 100))
+//            {
+//                Debug.Log(hit);
+//            }
+
+            if (rh && Vector2.Distance(brainPos, rh.point) > (offsetX.x + 0.1f))
+            {
+                rb2.AddForce(Vector2.right * MoveSpeed * (IsAirborn ? AirbornDrag : 1) * Input.GetAxis("Horizontal"));
+            }
         } 
         
         if (!IsAirborn && Input.GetKeyDown(KeyCode.Space))

@@ -8,7 +8,7 @@ public class DamageAdder : MonoBehaviour
     {
         if (!c.isTrigger)
         {
-            Debug.Log(c.gameObject.name);
+//            Debug.Log(c.gameObject.name);
 
             BrainAnimationController animco = c.gameObject.GetComponent<BrainAnimationController>();
 

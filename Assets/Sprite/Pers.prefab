@@ -200,6 +200,7 @@ GameObject:
   - component: {fileID: 6985342477924071375}
   - component: {fileID: 6985342477924071373}
   - component: {fileID: 7425568640506794180}
+  - component: {fileID: 2591415583633492745}
   m_Layer: 0
   m_Name: Pers
   m_TagString: Untagged
@@ -236,7 +237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 10
-  JumpHeight: 520
+  JumpHeight: 600
   AirbornDrag: 0.5
   JumpLock: 0
   IsAirborn: 0
@@ -285,7 +286,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6985342477924071379}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -412,3 +413,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!58 &2591415583633492745
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6985342477924071379}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.014166176, y: -0.05}
+  serializedVersion: 2
+  m_Radius: 0.40791994
