@@ -12,12 +12,14 @@ public class BrainCharacterController : MonoBehaviour
     public float AirbornDrag = 0.5f;
     public bool JumpLock = false;
     public bool IsAirborn = false;
+    public bool IsDead = false;
 
 
     private Rigidbody2D rb2;
     private BrainAnimationController animco;
     private GameObject _poc;
     private CircleCollider2D _col;
+    private BoxCollider2D _bc2c;
 
 //    public void OnCollisionEnter(Collision c)
 //    {
@@ -31,11 +33,14 @@ public class BrainCharacterController : MonoBehaviour
     {
         _poc = new GameObject("pointOfContact");
         _col = GetComponent<CircleCollider2D>();
+        _bc2c = GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (IsDead) return;
+
         float horizonShift = Input.GetAxis("Horizontal");
         int horizonSign = Math.Sign(horizonShift);
 
@@ -97,15 +102,41 @@ public class BrainCharacterController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Disables character after {delay} seconds
+    /// </summary>
+    /// <param name="delay">Delay in seconds before character is disabled</param>
+    public void DisableCharacterWithDelay(int delay)
+    {
+        Invoke(nameof(DisableCharacter), delay);
+    }
+
+    public void DropBodyDown()
+    {
+        rb2.AddForce(Vector2.down);
+    }
+
+    /// <summary>
+    /// Disables character after {delay} seconds and freezes all position axis
+    /// </summary>
+    /// <param name="delay">Delay in seconds before character is disabled</param>
+    public void DisableCharacterWithDelayFreeze(int delay)
+    {
+        rb2.constraints = RigidbodyConstraints2D.FreezeAll;
+
+        DisableCharacterWithDelay(delay);
+    }
+
     public void DisableCharacter()
     {
-        BoxCollider2D bc2c = GetComponent<BoxCollider2D>();
-        Vector2 v2Collider = bc2c.size;
+        _col.enabled = false;
+        _bc2c.enabled = true;
+        Vector2 v2Collider = _bc2c.size;
         v2Collider.y -= .3f;
-        bc2c.size = v2Collider;
-        Vector2 v2Offset = bc2c.offset;
+        _bc2c.size = v2Collider;
+        Vector2 v2Offset = _bc2c.offset;
         v2Offset.y = -.2f;
-        bc2c.offset = v2Offset;
+        _bc2c.offset = v2Offset;
 
         gameObject.layer = 7;
 
