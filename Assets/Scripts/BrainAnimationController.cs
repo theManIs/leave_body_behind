@@ -34,16 +34,16 @@ public class BrainAnimationController : MonoBehaviour
 
             anim.SetTrigger("Walk");
         }
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+    public void Jump()
+    {
+        anim.SetTrigger("Jump");
+
+        if (asource)
         {
-            anim.SetTrigger("Jump");
-
-            if (asource)
-            {
-                asource.clip = JumpSound;
-                asource.Play();
-            }
+            asource.clip = JumpSound;
+            asource.Play();
         }
     }
 

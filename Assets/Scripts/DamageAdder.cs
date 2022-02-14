@@ -10,7 +10,7 @@ public class DamageAdder : MonoBehaviour
     {
         if (!c.isTrigger && c.gameObject.TryGetComponent<BrainCharacterController>(out BrainCharacterController brain))
         {
-            Debug.Log(c.gameObject.name);
+//            Debug.Log(c.gameObject.name);
 
             BrainAnimationController animco = c.gameObject.GetComponent<BrainAnimationController>();
 

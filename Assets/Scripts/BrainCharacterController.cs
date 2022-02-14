@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class BrainCharacterController : MonoBehaviour
     public bool JumpLock = false;
     public bool IsAirborn = false;
     public bool IsDead = false;
+    public float DistanceError = 0.5f;
 
 
     private Rigidbody2D rb2;
@@ -58,12 +60,12 @@ public class BrainCharacterController : MonoBehaviour
         {
             Vector2 brainPos = new Vector2(transform.position.x, transform.position.y);
             Vector2 offsetX = new Vector2(_col.radius + _col.offset.x * horizonSign, 0);
-            RaycastHit2D rh = Physics2D.Raycast(brainPos + offsetX * horizonSign, Vector2.right * horizonSign);
+            RaycastHit2D rh = Physics2D.Raycast(brainPos + offsetX * horizonSign, Vector2.right * horizonSign, 10);
 
             if (rh)
             {
 //                Debug.Log("name " + rh.transform.name + " offsetX " + offsetX.x + " distance " + Vector2.Distance(brainPos, rh.point));
-                _poc.transform.position = rh.point;
+//                _poc.transform.position = rh.point;
             }
 
 
@@ -72,15 +74,19 @@ public class BrainCharacterController : MonoBehaviour
 //                Debug.Log(hit);
 //            }
 
+
             if (rh && Vector2.Distance(brainPos, rh.point) > (offsetX.x + 0.1f))
             {
                 rb2.AddForce(Vector2.right * MoveSpeed * (IsAirborn ? AirbornDrag : 1) * Input.GetAxis("Horizontal"));
+
+                
             }
-        } 
+        }
         
         if (!IsAirborn && Input.GetKeyDown(KeyCode.Space))
         {
             rb2.AddForce(Vector2.up * JumpHeight);
+            animco.Jump();
         }
 
         CheckAirborn();
@@ -88,12 +94,40 @@ public class BrainCharacterController : MonoBehaviour
 
     public void CheckAirborn()
     {
-        RaycastHit2D rh2 = Physics2D.Raycast(transform.position, Vector2.down, 1, LayerMask.GetMask("Platform"));
+        Vector2 raycastPoint = new Vector2(transform.position.x, transform.position.y - _col.radius + _col.offset.y);
+        RaycastHit2D rh2 = Physics2D.Raycast(raycastPoint, Vector2.down, DistanceError);
+//        RaycastHit2D rh2 = Physics2D.Raycast(transform.position, Vector2.down, DistanceError, LayerMask.GetMask("Platform"));
 
         if (rh2.collider != null)
         {
 //            float distance = Mathf.Abs(rh2.point.y - transform.position.y);
 //            Debug.Log(rh2.collider.name + " " + distance);
+
+            if (IsAirborn)
+            {
+               
+                if (rh2 && rh2.transform.TryGetComponent(out Rigidbody2D rbPush))
+                {
+//                    Debug.Log(transform.position.y + " " + _col.radius + " " + _col.offset.y + " " + (transform.position.y - _col.radius + _col.offset.y));
+//                    _poc.transform.position = rh.point;
+                    Debug.Log("gm name " + rbPush.name);
+//                    rbPush.AddForce(Vector2.down * 10);
+//                    EditorApplication.isPaused = true;
+//                    rbPush.gravityScale = 1;
+
+                    BoxCollider2D bc2d = rh2.transform.GetComponent<BoxCollider2D>();
+                    Vector2 chw = bc2d.size;
+                    chw.y -= 0.1f;
+
+                    if (chw.y < 0.01f)
+                    {
+                        chw.y = 0;
+                    }
+
+                    bc2d.size = chw;
+                }
+            }
+
             IsAirborn = false;
         }
         else
@@ -129,6 +163,8 @@ public class BrainCharacterController : MonoBehaviour
 
     public void DisableCharacter()
     {
+        gameObject.name = "Dead " + name;
+
         _col.enabled = false;
         _bc2c.enabled = true;
         Vector2 v2Collider = _bc2c.size;
@@ -139,16 +175,25 @@ public class BrainCharacterController : MonoBehaviour
         _bc2c.offset = v2Offset;
 
         gameObject.layer = 7;
-
-        Destroy(rb2);
+        rb2.constraints = RigidbodyConstraints2D.FreezeRotation;
+//        rb2.gravityScale = 0;
+//        Destroy(rb2);
         Destroy(animco);
         Destroy(this);
 
         Camera cam = GetComponentInChildren<Camera>();
+        cam.GetComponent<AudioListener>().enabled = false;
 
         if (cam)
         {
-            Destroy(cam.gameObject);
+            Destroy(cam.gameObject, 0.5f);
+        }
+
+        AudioListener aul = GetComponent<AudioListener>();
+
+        if (aul)
+        {
+            aul.enabled = false;
         }
     }
 }

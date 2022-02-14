@@ -226,11 +226,11 @@ Transform:
   - {fileID: 1702831622}
   - {fileID: 943527686}
   - {fileID: 73614857}
-  - {fileID: 949302439}
-  - {fileID: 1818150455}
   - {fileID: 1936857747}
+  - {fileID: 949302439}
   - {fileID: 2017898605}
   - {fileID: 1553766853}
+  - {fileID: 1818150455}
   - {fileID: 370133881}
   - {fileID: 1684692847}
   - {fileID: 1238868609}
@@ -2305,7 +2305,6 @@ GameObject:
   - component: {fileID: 1970974654}
   - component: {fileID: 1970974653}
   - component: {fileID: 1970974655}
-  - component: {fileID: 1970974656}
   m_Layer: 7
   m_Name: Tilemap
   m_TagString: Untagged
@@ -11241,27 +11240,6 @@ TilemapCollider2D:
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0.00001
---- !u!50 &1970974656
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1970974651}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 7
 --- !u!1001 &2017898604
 PrefabInstance:
   m_ObjectHideFlags: 0
