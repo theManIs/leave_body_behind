@@ -15,6 +15,7 @@ public class BrainCharacterController : MonoBehaviour
     public bool IsAirborn = false;
     public bool IsDead = false;
     public float DistanceError = 0.5f;
+    public int ColiderShrinkCountdown = 2;
 
 
     private Rigidbody2D rb2;
@@ -33,7 +34,7 @@ public class BrainCharacterController : MonoBehaviour
 
     public void Start()
     {
-        _poc = new GameObject("pointOfContact");
+//        _poc = new GameObject("pointOfContact");
         _col = GetComponent<CircleCollider2D>();
         _bc2c = GetComponent<BoxCollider2D>();
     }
@@ -62,11 +63,11 @@ public class BrainCharacterController : MonoBehaviour
             Vector2 offsetX = new Vector2(_col.radius + _col.offset.x * horizonSign, 0);
             RaycastHit2D rh = Physics2D.Raycast(brainPos + offsetX * horizonSign, Vector2.right * horizonSign, 10);
 
-            if (rh)
-            {
+//            if (rh)
+//            {
 //                Debug.Log("name " + rh.transform.name + " offsetX " + offsetX.x + " distance " + Vector2.Distance(brainPos, rh.point));
 //                _poc.transform.position = rh.point;
-            }
+//            }
 
 
 //            if (Physics.Raycast(new Ray(transform.position, Vector3.right * Input.GetAxis("Horizontal")), out RaycastHit hit, 100))
@@ -75,7 +76,7 @@ public class BrainCharacterController : MonoBehaviour
 //            }
 
 
-            if (rh && Vector2.Distance(brainPos, rh.point) > (offsetX.x + 0.1f))
+            if (!rh || Vector2.Distance(brainPos, rh.point) > (offsetX.x + 0.1f))
             {
                 rb2.AddForce(Vector2.right * MoveSpeed * (IsAirborn ? AirbornDrag : 1) * Input.GetAxis("Horizontal"));
 
@@ -94,23 +95,27 @@ public class BrainCharacterController : MonoBehaviour
 
     public void CheckAirborn()
     {
-        Vector2 raycastPoint = new Vector2(transform.position.x, transform.position.y - _col.radius + _col.offset.y);
-        RaycastHit2D rh2 = Physics2D.Raycast(raycastPoint, Vector2.down, DistanceError);
+        Vector2 raycastPointRight = new Vector2(transform.position.x + (_bc2c.size.x / 2f), transform.position.y - _col.radius + _col.offset.y);
+        Vector2 raycastPointLeft = new Vector2(transform.position.x - (_bc2c.size.x / 2f), transform.position.y - _col.radius + _col.offset.y);
+        Vector2 raycastPointCenter = new Vector2(transform.position.x - (_bc2c.size.x / 2f), transform.position.y - _col.radius + _col.offset.y);
+        RaycastHit2D rh0 = Physics2D.Raycast(raycastPointRight, Vector2.down, DistanceError);
+        RaycastHit2D rh1 = Physics2D.Raycast(raycastPointLeft, Vector2.down, DistanceError);
+        RaycastHit2D rh11 = Physics2D.Raycast(raycastPointCenter, Vector2.down, DistanceError);
+        RaycastHit2D rh2 = rh0 ? rh0 : rh1 ? rh1 : rh11;
 //        RaycastHit2D rh2 = Physics2D.Raycast(transform.position, Vector2.down, DistanceError, LayerMask.GetMask("Platform"));
 
         if (rh2.collider != null)
         {
-//            float distance = Mathf.Abs(rh2.point.y - transform.position.y);
-//            Debug.Log(rh2.collider.name + " " + distance);
-
             if (IsAirborn)
             {
-               
-                if (rh2 && rh2.transform.TryGetComponent(out Rigidbody2D rbPush))
+                float distance = Mathf.Abs(rh2.point.y - transform.position.y);
+                Debug.Log(rh2.collider.name + " " + gameObject.GetInstanceID() + " " + Time.frameCount);
+
+                if (rh2 && rh2.transform.TryGetComponent(out Rigidbody2D rbPush) && rh2.transform.TryGetComponent(out DeadBodyController brain) && ColiderShrinkCountdown > 0)
                 {
 //                    Debug.Log(transform.position.y + " " + _col.radius + " " + _col.offset.y + " " + (transform.position.y - _col.radius + _col.offset.y));
 //                    _poc.transform.position = rh.point;
-                    Debug.Log("gm name " + rbPush.name);
+                    Debug.Log("gm name \"" + rbPush.name + "\"" + " " + brain);
 //                    rbPush.AddForce(Vector2.down * 10);
 //                    EditorApplication.isPaused = true;
 //                    rbPush.gravityScale = 1;
@@ -118,13 +123,10 @@ public class BrainCharacterController : MonoBehaviour
                     BoxCollider2D bc2d = rh2.transform.GetComponent<BoxCollider2D>();
                     Vector2 chw = bc2d.size;
                     chw.y -= 0.1f;
-
-                    if (chw.y < 0.01f)
-                    {
-                        chw.y = 0;
-                    }
-
+                    chw.x -= 0.2f;
                     bc2d.size = chw;
+
+                    ColiderShrinkCountdown -= 1;
                 }
             }
 
@@ -132,6 +134,7 @@ public class BrainCharacterController : MonoBehaviour
         }
         else
         {
+//            Debug.Log( Time.frameCount);
             IsAirborn = true;
         }
     }
@@ -180,6 +183,7 @@ public class BrainCharacterController : MonoBehaviour
 //        Destroy(rb2);
         Destroy(animco);
         Destroy(this);
+        gameObject.AddComponent<DeadBodyController>();
 
         Camera cam = GetComponentInChildren<Camera>();
         cam.GetComponent<AudioListener>().enabled = false;

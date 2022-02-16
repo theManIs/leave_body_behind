@@ -126,6 +126,7 @@ SpriteRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -198,7 +199,6 @@ GameObject:
   - component: {fileID: 6985342477924071374}
   - component: {fileID: 6985342477924071376}
   - component: {fileID: 6985342477924071375}
-  - component: {fileID: 6985342477924071373}
   - component: {fileID: 7425568640506794180}
   - component: {fileID: 2591415583633492745}
   m_Layer: 0
@@ -241,6 +241,9 @@ MonoBehaviour:
   AirbornDrag: 0.5
   JumpLock: 0
   IsAirborn: 0
+  IsDead: 0
+  DistanceError: 0.5
+  ColiderShrinkCountdown: 2
 --- !u!114 &6985342477924071374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -305,18 +308,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.8096814, y: 0.7}
   m_EdgeRadius: 0
---- !u!114 &6985342477924071373
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6985342477924071379}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3116886916e9a5479c2f17c5041423f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!82 &7425568640506794180
 AudioSource:
   m_ObjectHideFlags: 0
