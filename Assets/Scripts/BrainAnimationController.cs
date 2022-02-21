@@ -28,12 +28,19 @@ public class BrainAnimationController : MonoBehaviour
             asource = GetComponent<AudioSource>();
         }
 
-        if (!Input.GetAxis("Horizontal").Equals(0.0f))
-        {
-            sp.flipX = Input.GetAxis("Horizontal") < 0;
+//        if (!Input.GetAxis("Horizontal").Equals(0.0f))
+//        {
+//            sp.flipX = Input.GetAxis("Horizontal") < 0;
+//
+//            anim.SetTrigger("Walk");
+//        }
+    }
 
-            anim.SetTrigger("Walk");
-        }
+    public void Walk()
+    {
+        sp.flipX = Input.GetAxis("Horizontal") < 0;
+
+        anim.SetTrigger("Walk");
     }
 
     public void Jump()
@@ -50,6 +57,17 @@ public class BrainAnimationController : MonoBehaviour
     public void Die()
     {
         anim.SetTrigger("Dead");
+
+        if (asource)
+        {
+            asource.clip = DeadSound;
+            asource.Play();
+        }
+    }
+
+    public void Smoke()
+    {
+        anim.SetTrigger("Smoke");
 
         if (asource)
         {

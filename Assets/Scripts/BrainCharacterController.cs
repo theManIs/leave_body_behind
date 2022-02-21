@@ -79,15 +79,23 @@ public class BrainCharacterController : MonoBehaviour
             if (!rh || Vector2.Distance(brainPos, rh.point) > (offsetX.x + 0.1f))
             {
                 rb2.AddForce(Vector2.right * MoveSpeed * (IsAirborn ? AirbornDrag : 1) * Input.GetAxis("Horizontal"));
-
-                
             }
+
+            animco.Walk();
         }
         
         if (!IsAirborn && Input.GetKeyDown(KeyCode.Space))
         {
             rb2.AddForce(Vector2.up * JumpHeight);
             animco.Jump();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            animco.Smoke();
+            rb2.constraints = RigidbodyConstraints2D.FreezePositionX;
+            IsDead = true;
+            Invoke(nameof(DisableCharacter), 3.5f);
         }
 
         CheckAirborn();
@@ -109,13 +117,13 @@ public class BrainCharacterController : MonoBehaviour
             if (IsAirborn)
             {
                 float distance = Mathf.Abs(rh2.point.y - transform.position.y);
-                Debug.Log(rh2.collider.name + " " + gameObject.GetInstanceID() + " " + Time.frameCount);
+//                Debug.Log(rh2.collider.name + " " + gameObject.GetInstanceID() + " " + Time.frameCount);
 
                 if (rh2 && rh2.transform.TryGetComponent(out Rigidbody2D rbPush) && rh2.transform.TryGetComponent(out DeadBodyController brain) && ColiderShrinkCountdown > 0)
                 {
 //                    Debug.Log(transform.position.y + " " + _col.radius + " " + _col.offset.y + " " + (transform.position.y - _col.radius + _col.offset.y));
 //                    _poc.transform.position = rh.point;
-                    Debug.Log("gm name \"" + rbPush.name + "\"" + " " + brain);
+//                    Debug.Log("gm name \"" + rbPush.name + "\"" + " " + brain);
 //                    rbPush.AddForce(Vector2.down * 10);
 //                    EditorApplication.isPaused = true;
 //                    rbPush.gravityScale = 1;
