@@ -1,22 +1,21 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+
 
 public class BrainCharacterController : MonoBehaviour
 {
     public float MoveSpeed = 10;
     public float JumpHeight = 100;
-    public float AirbornDrag = 0.5f;
     public bool JumpLock = false;
     public bool IsAirborn = false;
     public bool IsDead = false;
     public float DistanceError = 0.5f;
     public int ColiderShrinkCountdown = 2;
     public float CameraDistance = 6;
+    [Range(0, 10)] public int AirbornDrag = 5;
+
+    public RigidbodyProperties GravityScaleRigidbody = new RigidbodyProperties
+        {Mass = 1, FloatGravity = 3, LinearDrag = 5};
 
     private Rigidbody2D rb2;
     private BrainAnimationController animco;
@@ -33,6 +32,8 @@ public class BrainCharacterController : MonoBehaviour
 ////        }
 //    }
 
+    private float GetMoveSpeed => Application.isEditor ? MoveSpeed : MoveSpeed * 2;
+
     public void Start()
     {
 //        _poc = new GameObject("pointOfContact");
@@ -40,12 +41,15 @@ public class BrainCharacterController : MonoBehaviour
         _bc2c = GetComponent<BoxCollider2D>();
         _cam = GetComponentInChildren<Camera>();
         _cam.orthographicSize = CameraDistance;
+        rb2 = GetComponent<Rigidbody2D>();
+        GravityScaleRigidbody.Rb2 = rb2;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (IsDead) return;
+        GravityScaleRigidbody.SetGravityScale().SetMass().SetLinearDrag();
 
         float horizonShift = Input.GetAxis("Horizontal");
         int horizonSign = Math.Sign(horizonShift);
@@ -81,7 +85,7 @@ public class BrainCharacterController : MonoBehaviour
 
             if (!rh || Vector2.Distance(brainPos, rh.point) > (offsetX.x + 0.1f))
             {
-                rb2.AddForce(Vector2.right * MoveSpeed * (IsAirborn ? AirbornDrag : 1) * Input.GetAxis("Horizontal"));
+                rb2.AddForce(Vector2.right * GetMoveSpeed * (IsAirborn ? AirbornDrag / 5 : 1) * Input.GetAxis("Horizontal"));
             }
 
             animco.Walk();
@@ -106,13 +110,17 @@ public class BrainCharacterController : MonoBehaviour
 
     public void CheckAirborn()
     {
-        Vector2 raycastPointRight = new Vector2(transform.position.x + (_bc2c.size.x / 2f), transform.position.y - _col.radius + _col.offset.y);
-        Vector2 raycastPointLeft = new Vector2(transform.position.x - (_bc2c.size.x / 2f), transform.position.y - _col.radius + _col.offset.y);
-        Vector2 raycastPointCenter = new Vector2(transform.position.x - (_bc2c.size.x / 2f), transform.position.y - _col.radius + _col.offset.y);
-        RaycastHit2D rh0 = Physics2D.Raycast(raycastPointRight, Vector2.down, DistanceError);
-        RaycastHit2D rh1 = Physics2D.Raycast(raycastPointLeft, Vector2.down, DistanceError);
+//        Vector2 raycastPointRight = new Vector2(transform.position.x + (_bc2c.size.x / 2f), transform.position.y - _col.radius + _col.offset.y);
+//        Vector2 raycastPointLeft = new Vector2(transform.position.x - (_bc2c.size.x / 2f), transform.position.y - _col.radius + _col.offset.y);
+//        Vector2 raycastPointCenter = new Vector2(transform.position.x - (_bc2c.size.x / 2f), transform.position.y - _col.radius + _col.offset.y);
+        Vector2 raycastPointRight = new Vector2(transform.position.x + _col.radius + _col.offset.x + 0.0001f, transform.position.y + _col.offset.y - 0.0001f);
+        Vector2 raycastPointLeft = new Vector2(transform.position.x - _col.radius + _col.offset.x - 0.0001f, transform.position.y + _col.offset.y - 0.0001f);
+        Vector2 raycastPointCenter = new Vector2(transform.position.x + _col.offset.x, transform.position.y - _col.radius + _col.offset.y - 0.0001f);
+        RaycastHit2D rh0 = Physics2D.Raycast(raycastPointRight, Vector2.down, DistanceError + _col.radius);
+        RaycastHit2D rh1 = Physics2D.Raycast(raycastPointLeft, Vector2.down, DistanceError + _col.radius);
         RaycastHit2D rh11 = Physics2D.Raycast(raycastPointCenter, Vector2.down, DistanceError);
         RaycastHit2D rh2 = rh0 ? rh0 : rh1 ? rh1 : rh11;
+//        Debug.Log(rh2.collider.name);
 //        RaycastHit2D rh2 = Physics2D.Raycast(transform.position, Vector2.down, DistanceError, LayerMask.GetMask("Platform"));
 
         if (rh2.collider != null)
@@ -209,5 +217,56 @@ public class BrainCharacterController : MonoBehaviour
         {
             aul.enabled = false;
         }
+    }
+}
+
+[Serializable]
+public struct RigidbodyProperties
+{
+    public Rigidbody2D Rb2;
+
+    [Range(0, 10)]
+    public float FloatGravity;
+    private float _previousFloatValue;
+
+    [Range(0, 10)]
+    public float Mass;
+    private float _previousFloatMass;
+
+    [Range(0, 10)]
+    public float LinearDrag;
+    private float _previousLinearDrag;
+
+    public RigidbodyProperties SetGravityScale()
+    {
+        if (!_previousFloatValue.Equals(FloatGravity))
+        {
+            _previousFloatValue = FloatGravity;
+            Rb2.gravityScale = FloatGravity;
+        }
+
+        return this;
+    }
+
+    public RigidbodyProperties SetMass()
+    {
+        if (!_previousFloatMass.Equals(Mass))
+        {
+            _previousFloatMass = Mass;
+            Rb2.mass = Mass;
+        }
+
+        return this;
+    }
+
+    public RigidbodyProperties SetLinearDrag()
+    {
+        if (!_previousLinearDrag.Equals(LinearDrag))
+        {
+            _previousLinearDrag = LinearDrag;
+            Rb2.drag = LinearDrag;
+        }
+
+        return this;
     }
 }

@@ -155,7 +155,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 10
   m_Sprite: {fileID: 21300000, guid: 70325497041723f4bbc1cf276e43d0f9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -236,14 +236,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 005113716907e9f4a85206c12cefccd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 10
-  JumpHeight: 1000
-  AirbornDrag: 0.25
+  MoveSpeed: 20
+  JumpHeight: 1200
   JumpLock: 0
   IsAirborn: 0
   IsDead: 0
   DistanceError: 0.5
   ColiderShrinkCountdown: 2
+  CameraDistance: 6
+  AirbornDrag: 5
+  GravityScaleRigidbody:
+    Rb2: {fileID: 0}
+    FloatGravity: 3
+    Mass: 1
+    LinearDrag: 5
 --- !u!114 &6985342477924071374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,7 +282,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 5
   m_AngularDrag: 0.05
-  m_GravityScale: 1.5
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnerController : MonoBehaviour
@@ -12,6 +9,9 @@ public class SpawnerController : MonoBehaviour
     {
 //        Debug.Log("The fist assign " + transform.name);
         InitTargetBrainWithBackground(transform);
+
+        GameObject go = new GameObject(nameof(KeyCatcherController), typeof(KeyCatcherController));
+        go.transform.parent = transform;
     }
 
     public void InitTargetBrainWithBackground(Transform brain)
