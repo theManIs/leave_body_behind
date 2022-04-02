@@ -16,13 +16,14 @@ public class BrainCharacterController : MonoBehaviour
     public bool IsDead = false;
     public float DistanceError = 0.5f;
     public int ColiderShrinkCountdown = 2;
-
+    public float CameraDistance = 6;
 
     private Rigidbody2D rb2;
     private BrainAnimationController animco;
     private GameObject _poc;
     private CircleCollider2D _col;
     private BoxCollider2D _bc2c;
+    private Camera _cam;
 
 //    public void OnCollisionEnter(Collision c)
 //    {
@@ -37,6 +38,8 @@ public class BrainCharacterController : MonoBehaviour
 //        _poc = new GameObject("pointOfContact");
         _col = GetComponent<CircleCollider2D>();
         _bc2c = GetComponent<BoxCollider2D>();
+        _cam = GetComponentInChildren<Camera>();
+        _cam.orthographicSize = CameraDistance;
     }
 
     // Update is called once per frame
@@ -193,12 +196,11 @@ public class BrainCharacterController : MonoBehaviour
         Destroy(this);
         gameObject.AddComponent<DeadBodyController>();
 
-        Camera cam = GetComponentInChildren<Camera>();
-        cam.GetComponent<AudioListener>().enabled = false;
+        _cam.GetComponent<AudioListener>().enabled = false;
 
-        if (cam)
+        if (_cam)
         {
-            Destroy(cam.gameObject, 0.5f);
+            Destroy(_cam.gameObject, 0.5f);
         }
 
         AudioListener aul = GetComponent<AudioListener>();
