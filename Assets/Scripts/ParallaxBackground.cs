@@ -21,7 +21,8 @@ public class ParallaxBackground : MonoBehaviour
 
         _targetPreviousPosition = FollowingTarget.position;
 
-        transform.position = _targetPreviousPosition / transform.localScale.y + OffsetPosition;
+//        transform.position = _targetPreviousPosition / transform.localScale.y + OffsetPosition;
+        transform.position = _targetPreviousPosition + OffsetPosition;
 
     }
 

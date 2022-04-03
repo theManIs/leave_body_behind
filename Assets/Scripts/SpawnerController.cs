@@ -1,9 +1,12 @@
+using System;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 public class SpawnerController : MonoBehaviour
 {
     public GameObject RespawnGameObject;
     public ParallaxBackground[] BackgroundToSetTarget;
+    public ParallaxElement[] BackgroundToParallax;
 
     public void Start()
     {
@@ -20,7 +23,29 @@ public class SpawnerController : MonoBehaviour
         {
             parallaxBackground.FollowingTarget = brain;
         }
+    }    
+    
+    public void InitTargetBrainWithBackgroundFromTransform(Transform brain)
+    {
+        foreach (ParallaxElement t in BackgroundToParallax)
+        {
+//            Transform parallaxElement = Instantiate(t.Background, transform.position, Quaternion.identity);
+            ParallaxBackground parallaxBackground = t.Background.gameObject.AddComponent<ParallaxBackground>();
+            parallaxBackground.ParallaxStrength = t.GetStrength();
+            parallaxBackground.OffsetPosition = t.Offset;
+//            parallaxBackground.OffsetPosition = new Vector3(transform.position.x - t.Background.transform.position.x, 0, 0);
+//            Debug.Log("transform.position.x" + transform.position.x);
+//            Debug.Log("t.Background.transform.position.x" + t.Background.transform.position.x);
+//            t.Background.position = transform.position;
+//            Debug.Log("t.Background.transform.position.x = transform.position" + t.Background.transform.position.x);
+            //            Vector3 localScale = t.Background.localScale;
+            //            t.Background.localScale = Vector3.one;
+            //            t.Background.localScale = localScale;
+            parallaxBackground.FollowingTarget = brain;
+        }
     }
+
+
 
     // Update is called once per frame
     void Update()
@@ -33,8 +58,23 @@ public class SpawnerController : MonoBehaviour
             {
                 GameObject theBrain = Instantiate(RespawnGameObject, transform.position, Quaternion.identity);
 
-                InitTargetBrainWithBackground(theBrain.transform);
+                InitTargetBrainWithBackgroundFromTransform(theBrain.transform);
             }
         }
+    }
+}
+
+[Serializable]
+public struct ParallaxElement
+{
+    public Transform Background;
+    [Tooltip("Сила паралакса в процентах")][Range(0, 100)] 
+    public int Strength;
+    [Tooltip("Сдвиг картинки по осям; позволяет картинке следовать не от точки спауна")]
+    public Vector3 Offset;
+
+    public float GetStrength()
+    {
+        return (float)Strength / (float)100;
     }
 }
