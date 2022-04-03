@@ -7,14 +7,28 @@ public class SpawnerController : MonoBehaviour
     public GameObject RespawnGameObject;
     public ParallaxBackground[] BackgroundToSetTarget;
     public ParallaxElement[] BackgroundToParallax;
+    public KeyCatcherController Kcc;
+    public bool LockReleasedFromTheBeginning;
 
     public void Start()
     {
 //        Debug.Log("The fist assign " + transform.name);
         InitTargetBrainWithBackground(transform);
+        InitKeyCatcherController();
 
+        if (LockReleasedFromTheBeginning)
+        {
+            ReleaseMenuLock();
+        }
+    }
+
+    public void ReleaseMenuLock() => Kcc.ReleasedLock = true;
+
+    public void InitKeyCatcherController()
+    {
         GameObject go = new GameObject(nameof(KeyCatcherController), typeof(KeyCatcherController));
         go.transform.parent = transform;
+        Kcc = go.GetComponent<KeyCatcherController>();
     }
 
     public void InitTargetBrainWithBackground(Transform brain)
@@ -50,17 +64,19 @@ public class SpawnerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (RespawnGameObject)
-        {
-            BrainCharacterController bcc = FindObjectOfType<BrainCharacterController>();
-
-            if (!bcc)
+            if (RespawnGameObject)
             {
-                GameObject theBrain = Instantiate(RespawnGameObject, transform.position, Quaternion.identity);
+                BrainCharacterController bcc = FindObjectOfType<BrainCharacterController>();
 
-                InitTargetBrainWithBackgroundFromTransform(theBrain.transform);
+                if (!bcc)
+                {
+                    GameObject theBrain = Instantiate(RespawnGameObject, transform.position, Quaternion.identity);
+
+                    InitTargetBrainWithBackgroundFromTransform(theBrain.transform);
+
+                    theBrain.GetComponent<BrainCharacterController>().Kcc = Kcc;
+                }
             }
-        }
     }
 }
 

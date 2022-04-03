@@ -12,10 +12,11 @@ public class BrainCharacterController : MonoBehaviour
     public float DistanceError = 0.5f;
     public int ColiderShrinkCountdown = 2;
     public float CameraDistance = 6;
-    [Range(0, 10)] public int AirbornDrag = 5;
+    [Range(0, 10)] 
+    public int AirbornDrag = 5;
+    public RigidbodyProperties GravityScaleRigidbody = new RigidbodyProperties {Mass = 1, FloatGravity = 3, LinearDrag = 5};
+    public KeyCatcherController Kcc;
 
-    public RigidbodyProperties GravityScaleRigidbody = new RigidbodyProperties
-        {Mass = 1, FloatGravity = 3, LinearDrag = 5};
 
     private Rigidbody2D rb2;
     private BrainAnimationController animco;
@@ -51,7 +52,7 @@ public class BrainCharacterController : MonoBehaviour
         if (IsDead) return;
         GravityScaleRigidbody.SetGravityScale().SetMass().SetLinearDrag();
 
-        float horizonShift = Input.GetAxis("Horizontal");
+        float horizonShift = Kcc.Horizontal;
         int horizonSign = Math.Sign(horizonShift);
 
         if (rb2 is null)
@@ -64,7 +65,7 @@ public class BrainCharacterController : MonoBehaviour
         }
 
 //        Debug.DrawRay(transform.position, Vector3.right * Input.GetAxis("Horizontal"), Color.yellow);
-        if (!Input.GetAxis("Horizontal").Equals(0.0f))
+        if (!Kcc.Horizontal.Equals(0.0f))
         {
             Vector2 brainPos = new Vector2(transform.position.x, transform.position.y);
             Vector2 offsetX = new Vector2(_col.radius + _col.offset.x * horizonSign, 0);
@@ -85,13 +86,13 @@ public class BrainCharacterController : MonoBehaviour
 
             if (!rh || Vector2.Distance(brainPos, rh.point) > (offsetX.x + 0.1f))
             {
-                rb2.AddForce(Vector2.right * GetMoveSpeed * (IsAirborn ? AirbornDrag / 5 : 1) * Input.GetAxis("Horizontal"));
+                rb2.AddForce(Vector2.right * GetMoveSpeed * (IsAirborn ? AirbornDrag / 5 : 1) * Kcc.Horizontal);
             }
 
             animco.Walk();
         }
         
-        if (!IsAirborn && Input.GetKeyDown(KeyCode.Space))
+        if (!IsAirborn && Kcc.Space)
         {
             rb2.AddForce(Vector2.up * JumpHeight);
             animco.Jump();
